@@ -76,7 +76,7 @@ class GameCog(commands.Cog, name='Game'):
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab drive points, :( guess you're not licensed.")
-            await ctx.send("Drive Points have been updated to %d" %x)
+            await ctx.send(f"Drive Points have been updated to {x}")
         else:
             await ctx.send(f"You are not allowed to edit this param, only the DM can. And the first param needs to be a number")
 
@@ -120,10 +120,10 @@ class GameCog(commands.Cog, name='Game'):
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab drive points, :( guess you're not licensed.")
-            await ctx.send("Drive Points have been updated to %d" %y)
+            await ctx.send(f"Drive Points have been updated to {y}")
         else:
             # we are not gucci, feel bad.
-            await ctx.send(f"You are trying to use more drive than you have. You currently have: %d" % result)
+            await ctx.send(f"You are trying to use more drive than you have. You currently have: {result}")
 
 # use hero points
     @commands.command()
@@ -165,21 +165,50 @@ class GameCog(commands.Cog, name='Game'):
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab hero points, :( guess you're no hero.")
-            await ctx.send("Hero Points have been updated to %d" %y)
+            await ctx.send(f"Hero Points have been updated to {y}")
         else:
             # we are not gucci, feel bad.
-            await ctx.send(f"You are trying to use more hero points than you have. You currently have: %d" % result)
+            await ctx.send(f"You are trying to use more hero points than you have. You currently have: {result}")
 
 # character sheet demo - WIP
     @commands.command()
     async def char(self, ctx):
-        # file=discord.File("/opt/discord/juniper.jpg", filename="juniper.png")
-        embed = discord.Embed(title="Kill Kat", colour=discord.Colour(0x439b32), description="```\nKill Kat, a cat that kills.```")
-        embed.set_image(url="https://giphy.com/gifs/dog-meme-douge-VFNLKgxi819ugPTiq9")
-        embed.set_thumbnail(url=f"{ctx.author.avatar_url}")
+        try:
+            db3 = sqlite3.connect('space_kings.sqlite3')
+            ins = db3.cursor()
+            plyr_ins = (ctx.author.display_name,)
+            sql_stuff = """
+                SELECT player_brawn, player_intelligence, player_charm, player_agility, player_wit, player_presence, player_name, player_char_desc
+                FROM players
+                WHERE player_discord= ?
+                """
+            ins.execute(sql_stuff, plyr_ins)
+        except sqlite3.Error as e:
+            print(e)
+            await ctx.send(f"ERROR: ")
+
+        attributes = ins.fetchone()
+
+        # need to format results
+        brawn = attributes[0]
+        intelligence = attributes[1]
+        charm = attributes[2]
+        agility = attributes[3]
+        wit = attributes[4]
+        presence = attributes[5]
+        name = attributes[6]
+        char_desc = attributes[7]
+
+        # fancy discord embed
+        embed = discord.Embed(title=f"{name}", colour=discord.Colour(0x439b32), description=f"```\n{char_desc}```")
         embed.set_author(name=f"{ctx.author}")
-        embed.add_field(name="**Brawn**", value="10", inline=True)
-        embed.add_field(name="**Intelligence**", value="10", inline=True)
+        embed.add_field(name="**Brawn**", value=f"{brawn}", inline=True)
+        embed.add_field(name="**Intelligence**", value=f"{intelligence}", inline=True)
+        embed.add_field(name="**Charm**", value=f"{charm}", inline=True)
+        embed.add_field(name="**Agility**", value=f"{agility}", inline=True)
+        embed.add_field(name="**Wit**", value=f"{wit}", inline=True)
+        embed.add_field(name="**Presence**", value=f"{presence}", inline=True)
+        embed.set_thumbnail(url=f"{ctx.author.avatar_url}")
         await ctx.send(embed=embed)
 
 # list out player attributes
@@ -213,12 +242,12 @@ class GameCog(commands.Cog, name='Game'):
         # fancy discord embed
         embed = discord.Embed(colour=discord.Colour(0x439b32))
         embed.set_author(name=f"{name}")
-        embed.add_field(name="**Brawn**", value="%d" % brawn, inline=True)
-        embed.add_field(name="**Intelligence**", value="%d" % intelligence, inline=True)
-        embed.add_field(name="**Charm**", value="%d" % charm, inline=True)
-        embed.add_field(name="**Agility**", value="%d" % agility, inline=True)
-        embed.add_field(name="**Wit**", value="%d" % wit, inline=True)
-        embed.add_field(name="**Presence**", value="%d" % presence, inline=True)
+        embed.add_field(name="**Brawn**", value=f"{brawn}", inline=True)
+        embed.add_field(name="**Intelligence**", value=f"{intelligence}", inline=True)
+        embed.add_field(name="**Charm**", value=f"{charm}", inline=True)
+        embed.add_field(name="**Agility**", value=f"{agility}", inline=True)
+        embed.add_field(name="**Wit**", value=f"{wit}", inline=True)
+        embed.add_field(name="**Presence**", value=f"{presence}", inline=True)
         await ctx.send(embed=embed)
 
 # list out player skills
@@ -287,25 +316,25 @@ class GameCog(commands.Cog, name='Game'):
         # fancy discord embed
         embed = discord.Embed(colour=discord.Colour(0x439b32))
         embed.set_author(name=f"{name}")
-        embed.add_field(name="**Athletics**", value="%d" % athletics, inline=True)
-        embed.add_field(name="**Biology**", value="%d" % biology, inline=True)
-        embed.add_field(name="**Computers**", value="%d" % computers, inline=True)
-        embed.add_field(name="**Empathy**", value="%d" % empathy, inline=True)
-        embed.add_field(name="**Engineering**", value="%d" % engineering, inline=True)
-        embed.add_field(name="**Explosives**", value="%d" % explosives, inline=True)
-        embed.add_field(name="**Firearms**", value="%d" % firearms, inline=True)
-        embed.add_field(name="**Investigation**", value="%d" % investigation, inline=True)
-        embed.add_field(name="**Law**", value="%d" % law, inline=True)
-        embed.add_field(name="**Lying**", value="%d" % lying, inline=True)
-        embed.add_field(name="**Melee**", value="%d" % melee, inline=True)
-        embed.add_field(name="**Perform**", value="%d" % perform, inline=True)
-        embed.add_field(name="**Piloting**", value="%d" % piloting, inline=True)
-        embed.add_field(name="**Persuasion**", value="%d" % persuasion, inline=True)
-        embed.add_field(name="**Sneaking**", value="%d" % sneaking, inline=True)
-        embed.add_field(name="**Spacewise**", value="%d" % spacewise, inline=True)
-        embed.add_field(name="**Survival**", value="%d" % survival, inline=True)
-        embed.add_field(name="**Telekinesis**", value="%d" % telekinesis, inline=True)
-        embed.add_field(name="**Telepathy**", value="%d" % telepathy, inline=True)
+        embed.add_field(name="**Athletics**", value=f"{athletics}", inline=True)
+        embed.add_field(name="**Biology**", value=f"{biology}", inline=True)
+        embed.add_field(name="**Computers**", value=f"{computers}", inline=True)
+        embed.add_field(name="**Empathy**", value=f"{empathy}", inline=True)
+        embed.add_field(name="**Engineering**", value=f"{engineering}", inline=True)
+        embed.add_field(name="**Explosives**", value=f"{explosives}", inline=True)
+        embed.add_field(name="**Firearms**", value=f"{firearms}", inline=True)
+        embed.add_field(name="**Investigation**", value=f"{investigation}", inline=True)
+        embed.add_field(name="**Law**", value=f"{law}", inline=True)
+        embed.add_field(name="**Lying**", value=f"{lying}", inline=True)
+        embed.add_field(name="**Melee**", value=f"{melee}", inline=True)
+        embed.add_field(name="**Perform**", value=f"{perform}", inline=True)
+        embed.add_field(name="**Piloting**", value=f"{piloting}", inline=True)
+        embed.add_field(name="**Persuasion**", value=f"{persuasion}", inline=True)
+        embed.add_field(name="**Sneaking**", value=f"{sneaking}", inline=True)
+        embed.add_field(name="**Spacewise**", value=f"{spacewise}", inline=True)
+        embed.add_field(name="**Survival**", value=f"{survival}", inline=True)
+        embed.add_field(name="**Telekinesis**", value=f"{telekinesis}", inline=True)
+        embed.add_field(name="**Telepathy**", value=f"{telepathy}", inline=True)
         await ctx.send(embed=embed)
 
 # main player command, player attribute + skills
@@ -390,10 +419,10 @@ class GameCog(commands.Cog, name='Game'):
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab dodge, :( pls message JardoRook and tell them to git gud")
-            await ctx.send("Dodge has been updated to %d" %y)
+            await ctx.send(f"Dodge has been updated to {y}")
         else:
             # we are not gucci, feel bad.
-            await ctx.send(f"You are trying to use more dodge than you have. You currently have: %d" % result)
+            await ctx.send(f"You are trying to use more dodge than you have. You currently have: {result}")
 
 # healing
     @commands.command()
@@ -481,17 +510,16 @@ class GameCog(commands.Cog, name='Game'):
         # fancy discord embed
         embed = discord.Embed(colour=discord.Colour(0x439b32), title="Health")
         embed.set_author(name=f"{name}")
-        # embed.set_image(url="https://cdn.discordapp.com/embed/avatars/0.png")
-        embed.add_field(name="**Current Health**", value="%d" % health, inline=True)
+        embed.add_field(name="**Current Health**", value=f"{health}", inline=True)
         embed.add_field(name="**Injured**", value=f"{brawn * 2}", inline=True)
         embed.add_field(name="**Unconscious**", value=f"{brawn}", inline=True)
         await ctx.send(embed=embed)
         embed2 = discord.Embed(colour=discord.Colour(0x439b32), title="Stats")
-        embed2.add_field(name="**Initiative**", value="%d" % init, inline=True)
-        embed2.add_field(name="**Dodge**", value="%d" % dodge, inline=True)
-        embed2.add_field(name="**Drive**", value="%d" % drive, inline=True)
-        embed2.add_field(name="**Crit**", value="%d" % crit, inline=True)
-        embed2.add_field(name="**Hero Points**", value="%d" % hero, inline=True)
+        embed2.add_field(name="**Initiative**", value=f"{init}", inline=True)
+        embed2.add_field(name="**Dodge**", value=f"{dodge}", inline=True)
+        embed2.add_field(name="**Drive**", value=f"{drive}", inline=True)
+        embed2.add_field(name="**Crit**", value=f"{crit}", inline=True)
+        embed2.add_field(name="**Hero Points**", value=f"{hero}", inline=True)
         await ctx.send(embed=embed2)
 
 def setup(bot):
