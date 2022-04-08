@@ -64,6 +64,6 @@ class SqlCog(commands.Cog, name='SQL'):
             await ctx.send(f"User not found. Adding to DB")
             await ctx.invoke(self.bot.get_command('deck'))
 
-def setup(bot):
-    bot.add_cog(SqlCog(bot))
+async def setup(bot):
+    await bot.add_cog(SqlCog(bot))
     print('SQL Cog is loaded.')

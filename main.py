@@ -18,13 +18,20 @@ async def on_ready():
 initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
 # main
-if __name__ == '__main__':
+async def main():
+    async with bot:
+        await load_cogs()
+        # Pass the token
+        tokenfile = open('secret.json')
+        secret = json.load(tokenfile)
+        await bot.start(secret['token'])
+
+async def load_cogs():
     for extensions in initial_extensions:
         try:
-            bot.load_extension(extensions)
+            await bot.load_extension(extensions)
         except Exception as e:
-            print(f'Failed to load extension {extension}', file=sys.stderr)
-            traceback.print_exc()
+            print(f'Failed to load extension {extensions}', file=sys.stderr)
 
 @bot.command()
 async def character_card(ctx):
@@ -58,8 +65,3 @@ async def reload_cogs(ctx):
 async def commands(ctx):
     embed = discord.Embed(title="Command List", colour=discord.Colour(0x439b32), description="```\n!newplayer CharacterName \n - This command you need to run first, so you can be added to the DB \n!player_deck \n - Shows your current deck\n!pull # \n - Pulls cards from you deck, requires you to be in the DB\n!deck \n - Refreshes your deck\n!hero_points \n - Lists your available Hero Points```")
     await ctx.send(embed=embed)
-
-# Pass the token
-tokenfile = open('secret.json')
-secret = json.load(tokenfile)
-bot.run(secret['token'])

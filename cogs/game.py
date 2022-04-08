@@ -528,6 +528,6 @@ class GameCog(commands.Cog, name='Game'):
         embed2.add_field(name="**Hero Points**", value=f"{hero}", inline=True)
         await ctx.send(embed=embed2)
 
-def setup(bot):
-    bot.add_cog(GameCog(bot))
+async def setup(bot):
+    await bot.add_cog(GameCog(bot))
     print('Game Cog is loaded.')
