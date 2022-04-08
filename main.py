@@ -7,7 +7,8 @@ import random
 import sqlite3
 import json
 
-bot = commands.Bot(command_prefix='!', case_insensitive=True)
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix='!', case_insensitive=True, intents=intents)
 
 @bot.event
 async def on_ready():
