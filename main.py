@@ -14,7 +14,7 @@ async def on_ready():
     print('I am a shitty bot and I am online meow.')
 
 # extensions
-initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game']
+initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
 # main
 if __name__ == '__main__':
