@@ -36,6 +36,24 @@ async def character_card(ctx):
     await ctx.send(embed=embed)
 
 @bot.command()
+async def reload_cogs(ctx):
+    for extensions in initial_extensions:
+        try:
+            bot.unload_extension(extensions)
+        except Exception as e:
+            print(f'Failed to load extension {extension}', file=sys.stderr)
+            traceback.print_exc()
+            await ctx.send(f"hehe got some errors")
+    for extensions in initial_extensions:
+        try:
+            bot.load_extension(extensions)
+        except Exception as e:
+            print(f'Failed to load extension {extension}', file=sys.stderr)
+            traceback.print_exc()
+            await ctx.send(f"hehe got some errors")
+    await ctx.send(f"cogs reloaded")
+
+@bot.command()
 async def commands(ctx):
     embed = discord.Embed(title="Command List", colour=discord.Colour(0x439b32), description="```\n!newplayer CharacterName \n - This command you need to run first, so you can be added to the DB \n!player_deck \n - Shows your current deck\n!pull # \n - Pulls cards from you deck, requires you to be in the DB\n!deck \n - Refreshes your deck\n!hero_points \n - Lists your available Hero Points```")
     await ctx.send(embed=embed)

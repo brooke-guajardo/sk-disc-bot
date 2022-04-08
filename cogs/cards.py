@@ -12,15 +12,20 @@ class CardsCog(commands.Cog, name='Cards'):
     def __init__(self, bot):
         self.bot = bot
 
+# user getting new deck, hard reset
     @commands.command()
     async def deck(self, ctx):
         # Gold Deck
         dek = ['Joker', 'Joker', 'King of Clubs', 'Queen of Clubs', 'Jack of Clubs', '10 of Clubs', '9 of Clubs', '8 of Clubs', '7 of Clubs', '6 of Clubs', '5 of Clubs', '4 of Clubs', '3 of Clubs', '2 of Clubs', 'Ace of Clubs', 'King of Spades', 'Queen of Spades', 'Jack of Spades', '10 of Spades', '9 of Spades', '8 of Spades', '7 of Spades', '6 of Spades', '5 of Spades', '4 of Spades', '3 of Spades', '2 of Spades', 'Ace of Spades', 'King of Diamonds', 'Queen of Diamonds', 'Jack of Diamonds', '10 of Diamonds', '9 of Diamonds', '8 of Diamonds', '7 of Diamonds', '6 of Diamonds', '5 of Diamonds', '4 of Diamonds', '3 of Diamonds', '2 of Diamonds', 'Ace of Diamonds', 'King of Hearts', 'Queen of Hearts', 'Jack of Hearts', '10 of Hearts', '9 of Hearts', '8 of Hearts', '7 of Hearts', '6 of Hearts', '5 of Hearts', '4 of Hearts', '3 of Hearts', '2 of Hearts', 'Ace of Hearts']
-        
+
         # shuffle new deck, deck has 52 standard cards + 2 jokers
-        dek = random.shuffle(dek, random.seed())
-        
-        dek_ins = (dek, ctx.author.display_name,)
+        random.shuffle(dek, random.seed())
+        print(dek)
+
+        dek_str_for_db = ', '.join(str(e) for e in dek)
+
+        dek_ins = (dek_str_for_db, ctx.author.display_name,)
+        print(dek_ins)
         # try to insert deck for player
         try:
             db3 = sqlite3.connect('space_kings.sqlite3')
@@ -33,12 +38,9 @@ class CardsCog(commands.Cog, name='Cards'):
             db3.commit()
         except sqlite3.Error as e:
             print(e)
-            await ctx.send(f"ERROR: ")
+            await ctx.send(f"ERROR: Someshit happened when inserting your deck into the DB")
         print("1 new deck row updated, ID: ", ins.lastrowid)
         await ctx.send("A new deck has been added for you.")
-
-        # print deck as an array
-        await ctx.send(dek)
 
 # users pulling cards
     @commands.command()
@@ -93,6 +95,7 @@ class CardsCog(commands.Cog, name='Cards'):
                 WHERE player_discord = ?
                 """
                 ins.execute(sql_stuff_ins, deck_ins)
+                db3.commit()
             else:
                 # deck does not have enough cards
                 await ctx.send(f"Your deck ran out! Shuffling a new deck")
@@ -101,7 +104,7 @@ class CardsCog(commands.Cog, name='Cards'):
                 dek = ['Joker', 'Joker', 'King of Clubs', 'Queen of Clubs', 'Jack of Clubs', '10 of Clubs', '9 of Clubs', '8 of Clubs', '7 of Clubs', '6 of Clubs', '5 of Clubs', '4 of Clubs', '3 of Clubs', '2 of Clubs', 'Ace of Clubs', 'King of Spades', 'Queen of Spades', 'Jack of Spades', '10 of Spades', '9 of Spades', '8 of Spades', '7 of Spades', '6 of Spades', '5 of Spades', '4 of Spades', '3 of Spades', '2 of Spades', 'Ace of Spades', 'King of Diamonds', 'Queen of Diamonds', 'Jack of Diamonds', '10 of Diamonds', '9 of Diamonds', '8 of Diamonds', '7 of Diamonds', '6 of Diamonds', '5 of Diamonds', '4 of Diamonds', '3 of Diamonds', '2 of Diamonds', 'Ace of Diamonds', 'King of Hearts', 'Queen of Hearts', 'Jack of Hearts', '10 of Hearts', '9 of Hearts', '8 of Hearts', '7 of Hearts', '6 of Hearts', '5 of Hearts', '4 of Hearts', '3 of Hearts', '2 of Hearts', 'Ace of Hearts']
 
                 # shuffle new deck, deck has 52 standard cards + 2 jokers
-                dek = random.shuffle(dek, random.seed())
+                random.shuffle(dek, random.seed())
 
                 # we need to pull remaining cards from old deck, and then pull from new deck
                 hand_str = []
@@ -133,6 +136,16 @@ class CardsCog(commands.Cog, name='Cards'):
         db3.commit()
 
         await ctx.send(hand_str)
+        if any("Queen of Hearts" in s for s in hand_str):
+            db3 = sqlite3.connect('space_kings.sqlite3')
+            ins = db3.cursor()
+            plyr_ins = (ctx.author.display_name,)
+            sql_stuff = 'SELECT player_charm FROM players where player_discord= ?'
+            ins.execute(sql_stuff, plyr_ins)
+            result = ins.fetchall()[0]
+            x = result[0] + 1
+            # Queen of <3 times crit + 1
+            await ctx.send(f"Critical Hit! + {x} Successes!")
         print(hand_str)
 
 # show deck
