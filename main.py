@@ -9,12 +9,18 @@ import json
 import aiohttp
 
 intents = discord.Intents.default()
-initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
+initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm', 'cogs.test']
 
 class SKBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='!', case_insensitive=True, intents=intents)
-        self.initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
+        self.initial_extensions = [
+            'cogs.sql',
+            'cogs.cards',
+            'cogs.game',
+            'cogs.dm',
+            'cogs.test'
+        ]
 
     async def setup_hook(self):
         self.background_task.start()
