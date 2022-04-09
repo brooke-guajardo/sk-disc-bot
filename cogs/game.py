@@ -16,9 +16,6 @@ class GameCog(commands.Cog, name='Game'):
 ### most will require the author to exist in the sqlite3 db, please reference sql.py newplayer
 #######
 
-    async def cog_load(self):
-        print(f"hmm")
-
 # see hero points
     @commands.command()
     async def hero_points(self, ctx):
