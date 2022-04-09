@@ -12,7 +12,7 @@ initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
 class SKBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='!', case_insensitive=True, intents=intents)
+        super().__init__(command_prefix='$', case_insensitive=True, intents=intents)
         self.initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
     async def setup_hook(self):
