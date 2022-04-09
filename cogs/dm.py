@@ -278,7 +278,6 @@ class DmCog(commands.Cog, name='DM'):
                 await ctx.send(f"ERROR: Unable to update skill, :( guess you're not allowed.")
             await ctx.send(f"Skill {arg2} updated to {x} for {arg1}.")
 
-
 async def setup(bot):
     await bot.add_cog(DmCog(bot))
     print('DM Cog is loaded.')
