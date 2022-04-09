@@ -12,7 +12,7 @@ class TestCog(commands.Cog, name='Test'):
         self.bot = bot
 
     @commands.command()
-    async def ping(self, ctx):
+    async def pings(self, ctx):
         await ctx.send(f"Meow meow meow")
 
 async def setup(bot):
