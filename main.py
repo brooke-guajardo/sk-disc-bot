@@ -13,7 +13,7 @@ initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
 class SKBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='$', case_insensitive=True, intents=intents)
+        super().__init__(command_prefix='!', case_insensitive=True, intents=intents)
         self.initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
     async def setup_hook(self):
@@ -26,7 +26,7 @@ class SKBot(commands.Bot):
         await super().close()
         await self.session.close()
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=10)
     async def background_task(self):
         print('Running background task...')
 
