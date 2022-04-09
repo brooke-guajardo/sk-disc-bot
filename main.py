@@ -9,6 +9,8 @@ import json
 import aiohttp
 
 intents = discord.Intents.default()
+intents.typing = False
+intents.presences = False
 initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm', 'cogs.test']
 
 class SKBot(commands.Bot):
