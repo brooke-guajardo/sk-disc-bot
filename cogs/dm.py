@@ -1,14 +1,8 @@
-import discord
 from discord.ext import commands
-import asyncio
-import datetime
 import sqlite3
-import sys
-import random
 
 
 class DmCog(commands.Cog, name='DM'):
-
     def __init__(self, bot):
         self.bot = bot
 

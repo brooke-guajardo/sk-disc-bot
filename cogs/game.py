@@ -1,15 +1,9 @@
 import discord
 from discord.ext import commands
 from discord.ui import Button
-import asyncio
-import datetime
 import sqlite3
-import sys
-import random
-
 
 class GameCog(commands.Cog, name='Game'):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -17,8 +11,7 @@ class GameCog(commands.Cog, name='Game'):
 ### The significance of this cog is to contain all game mechanic functions
 ### most will require the author to exist in the sqlite3 db, please reference sql.py newplayer
 #######
-
-
+    async def cog_load(self):
 
 # see hero points
     @commands.command()
