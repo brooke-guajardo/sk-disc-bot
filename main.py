@@ -41,6 +41,10 @@ class SKBot(commands.Bot):
 
 bot = SKBot()
 
+tokenfile = open('secret.json')
+secret = json.load(tokenfile)
+bot.run(secret['token'])
+
 @bot.command()
 async def character_card(ctx):
     embed = discord.Embed(title="Kill Kat", colour=discord.Colour(0x439b32), description="```\nKill Kat, a cat that kills.```")
@@ -73,8 +77,3 @@ async def reload_cogs(ctx):
 async def cmds(ctx):
     embed = discord.Embed(title="Command List", colour=discord.Colour(0x439b32), description="```\n!newplayer CharacterName \n - This command you need to run first, so you can be added to the DB \n!player_deck \n - Shows your current deck\n!pull # \n - Pulls cards from you deck, requires you to be in the DB\n!deck \n - Refreshes your deck\n!hero_points \n - Lists your available Hero Points```")
     await ctx.send(embed=embed)
-    pass
-
-tokenfile = open('secret.json')
-secret = json.load(tokenfile)
-bot.run(secret['token'])
