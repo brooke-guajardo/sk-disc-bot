@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, event
 import asyncio
 import datetime
 import sys
@@ -15,11 +15,10 @@ class SKBot(commands.Bot):
         super().__init__(command_prefix='!', case_insensitive=True, intents=intents)
         self.initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
-    @bot.event
     async def on_ready():
         print('I am a shitty bot and I am online meow.')
 
-    @bot.command()
+    @commands()
     async def character_card(ctx):
         embed = discord.Embed(title="Kill Kat", colour=discord.Colour(0x439b32), description="```\nKill Kat, a cat that kills.```")
         embed.set_image(url=f"{ctx.author.avatar_url}")
@@ -29,7 +28,7 @@ class SKBot(commands.Bot):
         embed.add_field(name="**Intelligence**", value="10", inline=True)
         await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands()
     async def reload_cogs(ctx):
         for extensions in initial_extensions:
             try:
@@ -47,7 +46,7 @@ class SKBot(commands.Bot):
                 await ctx.send(f"hehe got some errors")
         await ctx.send(f"cogs reloaded")
 
-    @bot.command()
+    @commands()
     async def commands(ctx):
         embed = discord.Embed(title="Command List", colour=discord.Colour(0x439b32), description="```\n!newplayer CharacterName \n - This command you need to run first, so you can be added to the DB \n!player_deck \n - Shows your current deck\n!pull # \n - Pulls cards from you deck, requires you to be in the DB\n!deck \n - Refreshes your deck\n!hero_points \n - Lists your available Hero Points```")
         await ctx.send(embed=embed)
