@@ -15,6 +15,12 @@ class SKBot(commands.Bot):
         super().__init__(command_prefix='!', case_insensitive=True, intents=intents)
         self.initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
+    async def setup_hook(self):
+        self.background_task.start()
+        self.session = aiohttp.ClientSession()
+        for ext in self.initial_extensions:
+            await self.load_extension(ext)
+
     async def close(self):
         await super().close()
         await self.session.close()
