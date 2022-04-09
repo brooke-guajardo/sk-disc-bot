@@ -1,11 +1,12 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import asyncio
 import datetime
 import sys
 import random
 import sqlite3
 import json
+import aiohttp
 
 intents = discord.Intents.default()
 initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
@@ -16,12 +17,18 @@ class SKBot(commands.Bot):
         self.initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
     async def setup_hook(self):
+        self.background_task.start()
+        self.session = aiohttp.ClientSession()
         for ext in self.initial_extensions:
             await self.load_extension(ext)
 
     async def close(self):
         await super().close()
         await self.session.close()
+
+    @tasks.loop(minutes=1)
+    async def background_task(self):
+        print('Running background task...')
 
     async def on_ready(self):
         print('I am a shitty bot and I am online meow.')
@@ -60,7 +67,6 @@ async def reload_cogs(ctx):
 async def cmds(ctx):
     embed = discord.Embed(title="Command List", colour=discord.Colour(0x439b32), description="```\n!newplayer CharacterName \n - This command you need to run first, so you can be added to the DB \n!player_deck \n - Shows your current deck\n!pull # \n - Pulls cards from you deck, requires you to be in the DB\n!deck \n - Refreshes your deck\n!hero_points \n - Lists your available Hero Points```")
     await ctx.send(embed=embed)
-
 
 tokenfile = open('secret.json')
 secret = json.load(tokenfile)
