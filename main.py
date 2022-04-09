@@ -8,7 +8,7 @@ import sqlite3
 import json
 import aiohttp
 
-intents = discord.Intents.default()
+intents = discord.Intents(messages=True)
 intents.typing = False
 intents.presences = False
 initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm', 'cogs.test']
