@@ -11,7 +11,6 @@ class GameCog(commands.Cog, name='Game'):
 ### The significance of this cog is to contain all game mechanic functions
 ### most will require the author to exist in the sqlite3 db, please reference sql.py newplayer
 #######
-    async def cog_load(self):
 
 # see hero points
     @commands.command()
