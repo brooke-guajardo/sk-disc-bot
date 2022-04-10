@@ -23,7 +23,7 @@ intents = discord.Intents.all()
 #intents.presences = False
 
 # cogs
-initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm', 'cogs.test']
+initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
 
 class SKBot(commands.Bot):
     def __init__(self):
@@ -32,8 +32,7 @@ class SKBot(commands.Bot):
             'cogs.sql',
             'cogs.cards',
             'cogs.game',
-            'cogs.dm',
-            'cogs.test'
+            'cogs.dm'
         ]
 
     async def setup_hook(self):
