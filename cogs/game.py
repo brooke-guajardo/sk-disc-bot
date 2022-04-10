@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.ui import Button
+from discord.ui import Button, View
 import asyncio
 import datetime
 import sqlite3
@@ -209,9 +209,9 @@ class GameCog(commands.Cog, name='Game'):
         await ctx.send(embed=embed)
 
         button = Button(label="Ping", style=discord.ButtonStyle.green,)
-        view = View()
-        view.add_item(button)
-        await ctx.send("Pong!", view=view)
+        await ctx.send("Button Test", components = [
+            [ Button(label="Press Here", style="3")]
+            ])
 
 # list out player attributes
     @commands.command()
