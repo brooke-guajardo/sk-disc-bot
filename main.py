@@ -15,9 +15,9 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-intents = discord.Intents(messages=True)
-intents.typing = False
-intents.presences = False
+intents = discord.Intents.all()
+#intents.typing = False
+#intents.presences = False
 initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm', 'cogs.test']
 
 class SKBot(commands.Bot):
