@@ -205,7 +205,7 @@ class GameCog(commands.Cog, name='Game'):
         embed.add_field(name="**Agility**", value=f"{agility}", inline=True)
         embed.add_field(name="**Wit**", value=f"{wit}", inline=True)
         embed.add_field(name="**Presence**", value=f"{presence}", inline=True)
-        embed.set_thumbnail(url=f"{ctx.author.avatar_url}")
+        embed.set_thumbnail(url=f"{ctx.author.avatar.url}")
         await ctx.send(embed=embed)
 
         button = Button(label="Ping", style=discord.ButtonStyle.green,)
