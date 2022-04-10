@@ -9,16 +9,20 @@ import json
 import aiohttp
 import logging
 
+# Logging
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-intents = discord.Intents.default()
-intents.messages = True
-intents.typing = False
-intents.presences = False
+# new swanky intents that I totally don't hurt myself in my confusion over
+intents = discord.Intents.all()
+#intents.messages = True
+#intents.typing = False
+#intents.presences = False
+
+# cogs
 initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm', 'cogs.test']
 
 class SKBot(commands.Bot):
