@@ -208,11 +208,6 @@ class GameCog(commands.Cog, name='Game'):
         embed.set_thumbnail(url=f"{ctx.author.avatar.url}")
         await ctx.send(embed=embed)
 
-        button = Button(label="Ping", style=discord.ButtonStyle.green,)
-        await ctx.send("Button Test", components = [
-            [ Button(label="Press Here", style="3")]
-            ])
-
 # list out player attributes
     @commands.command()
     async def list_attr(self, ctx):
