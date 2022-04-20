@@ -5,7 +5,7 @@ import datetime
 import sqlite3
 import sys
 import random
-from sksetup import create_conn, commit_close_conn
+from .sksetup import create_conn, commit_close_conn
 
 class SqlCog(commands.Cog, name='SQL'):
 
