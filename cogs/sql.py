@@ -50,13 +50,13 @@ class SqlCog(commands.Cog, name='SQL'):
         print("Discord Handle:  ", ctx.author.display_name)
         try:
             # try to insert player discord name and name of character they pass
-            ins_cursor = create_conn()
+            conn, ins_cursor = create_conn()
             sql_stuff = """INSERT INTO players (player_name, player_discord) VALUES (?,?)"""
             ins_cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: User not added to DB")
-        commit_close_conn(ins_cursor)
+        commit_close_conn(conn)
         print("1 new player row inserted, ID: ", ins_cursor.lastrowid)
         if ins_cursor.lastrowid is None:
             print(f"User was not inserted, please check the logs")
