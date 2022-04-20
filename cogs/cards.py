@@ -5,6 +5,7 @@ import datetime
 import sqlite3
 import sys
 import random
+from .sksetup import create_conn, commit_close_conn
 
 
 class CardsCog(commands.Cog, name='Cards'):
@@ -28,35 +29,33 @@ class CardsCog(commands.Cog, name='Cards'):
         print(dek_ins)
         # try to insert deck for player
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, ins_cursor = create_conn()
             sql_stuff = """
             UPDATE players
             SET player_deck = (?)
             WHERE player_discord = (?)"""
-            ins.execute(sql_stuff, dek_ins)
-            db3.commit()
+            ins_cursor.execute(sql_stuff, dek_ins)
+            commit_close_conn(conn)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Someshit happened when inserting your deck into the DB, @JardoRook fix yo shit")
-        print("1 new deck row updated, ID: ", ins.lastrowid)
+        print(f"1 new deck row updated, ID: {ins_cursor.lastrowid}")
         await ctx.send("A new deck has been added for you.")
 
 # users pulling cards
     @commands.command()
     async def pull(self, ctx, arg1):
         # use discord display name as key to get the player's deck
-        db3 = sqlite3.connect('space_kings.sqlite3')
-        ins = db3.cursor()
+        conn, ins_cursor = create_conn()
         plyr_ins = (ctx.author.display_name,)
         sql_stuff = """
                 SELECT player_deck
                 FROM players
                 WHERE player_discord= ?
                 """
-        ins.execute(sql_stuff, plyr_ins)
+        ins_cursor.execute(sql_stuff, plyr_ins)
         # get raw string of current result/deck from query
-        result = ins.fetchone()[0]
+        result = ins_cursor.fetchone()[0]
         if result is None:
             # Player not in DB
             await ctx.send(f"You are not in the DB, please add yourself with !newplayer CharacterName")
@@ -71,16 +70,16 @@ class CardsCog(commands.Cog, name='Cards'):
             deck_size = len(dek_list)
 
             # get number of cards that user is trying to pull, need to cast string into an int variable
-            x = int(arg1)
-            y = range(x)
+            hand_num = int(arg1)
+            hand_size = range(hand_num)
 
-            if deck_size > x:
+            if deck_size > hand_num:
                 # deck has enough cards no issues
                 # take off the top of the list
                 # create hand
                 hand_str = []
-                # pull cards with the amount given from command, !pull # where x = #
-                for i in y:
+                # pull cards with the amount given from command, !pull # where hand_num = #
+                for i in hand_size:
                     hand_str.append(dek_list.pop(0))
                 # hand_str is the array of strings of the cards the player pulled
                 # now to return deck to DB minus the cards we pulled
@@ -94,8 +93,8 @@ class CardsCog(commands.Cog, name='Cards'):
                 SET player_deck = ?
                 WHERE player_discord = ?
                 """
-                ins.execute(sql_stuff_ins, deck_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff_ins, deck_ins)
+                commit_close_conn(conn)
             else:
                 # deck does not have enough cards
                 await ctx.send(f"Your deck ran out! Shuffling a new deck")
@@ -115,7 +114,7 @@ class CardsCog(commands.Cog, name='Cards'):
                     it -= 1
 
                 # after loop old deck is spent, get remaining value of cards to pull
-                it = range(x - deck_size)
+                it = range(hand_num - deck_size)
 
                 # pull from new deck that's shuffled
                 for i in it:
@@ -131,21 +130,21 @@ class CardsCog(commands.Cog, name='Cards'):
                 SET player_deck = ?
                 WHERE player_discord = ?
                 """
-                ins.execute(sql_stuff_ins, deck_ins)
+                ins_cursor.execute(sql_stuff_ins, deck_ins)
 
-        db3.commit()
+        commit_close_conn(conn)
 
         await ctx.send(hand_str)
         if any("Queen of Hearts" in s for s in hand_str):
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = 'SELECT player_charm FROM players where player_discord= ?'
-            ins.execute(sql_stuff, plyr_ins)
-            result = ins.fetchall()[0]
-            x = result[0] + 1
+            cursor.execute(sql_stuff, plyr_ins)
+            result = cursor.fetchall()[0]
+            num_success = result[0] + 1
             # Queen of <3 times crit + 1
-            await ctx.send(f"Critical Hit! + {x} Successes!")
+            await ctx.send(f"Critical Hit! + {num_success} Successes!")
+            commit_close_conn(conn)
         print(hand_str)
 
 # show deck
@@ -155,14 +154,14 @@ class CardsCog(commands.Cog, name='Cards'):
         plyr_ins = (ctx.author.display_name,)
         try:
             # pull string from table
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             sql_stuff = """SELECT player_deck from players where player_discord=?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: ")
-        result = ins.fetchone()[0]
+        result = cursor.fetchone()[0]
+        commit_close_conn(conn)
         await ctx.send(result)
 
 async def setup(bot):

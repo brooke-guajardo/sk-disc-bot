@@ -6,6 +6,7 @@ import datetime
 import sqlite3
 import sys
 import random
+from .sksetup import create_conn, commit_close_conn
 
 class GameCog(commands.Cog, name='Game'):
     def __init__(self, bot):
@@ -21,18 +22,18 @@ class GameCog(commands.Cog, name='Game'):
     async def hero_points(self, ctx):
         try:
             # try to select player discord name and name of character they pass
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_hero_points
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to grab hero points, :( guess you're no hero.")
-        result = ins.fetchone()[0]
+        result = cursor.fetchone()[0]
+        commit_close_conn(conn)
         await ctx.send(result)
 
 # see drive points
@@ -40,60 +41,59 @@ class GameCog(commands.Cog, name='Game'):
     async def drive_points(self, ctx):
         try:
             # try to select player discord name and name of character they pass
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_drive
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to grab drive, :( guess you're not licensed.")
-        result = ins.fetchone()[0]
+        result = cursor.fetchone()[0]
+        commit_close_conn(conn)
         await ctx.send(result)
 
 # set drive points, number then player discord name
     @commands.command()
     async def set_drive_points(self, ctx, arg1, arg2):
-        x = int(arg1)
-        if ctx.author.display_name == 'JardoRook' and isinstance(x, int):
+        hero_pts = int(arg1)
+        # need to add DM flag, or DM role check here
+        if ctx.author.display_name == 'JardoRook' and isinstance(hero_pts, int):
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
-                plyr_ins = (x, arg2,)
+                conn, ins_cursor = create_conn()
+                plyr_ins = (hero_pts, arg2,)
                 sql_stuff = """
                     UPDATE players
                     SET player_drive = (?)
                     WHERE player_discord = (?)"""
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab drive points, :( guess you're not licensed.")
-            await ctx.send(f"Drive Points have been updated to {x}")
+            await ctx.send(f"Drive Points have been updated to {hero_pts}")
         else:
-            await ctx.send(f"You are not allowed to edit this param, only the DM can. And the first param needs to be a number")
+            await ctx.send(f"You are not allowed to edit this param, only the DM can. And the first param needs to be a number\nExample: !set_drive_points 3 JardoRook")
 
 # use drive
     @commands.command()
     async def drive(self, ctx, arg1):
         try:
             # try to select player discord name and name of character they pass
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_drive
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to grab drive, :( guess you're not licensed.")
-        result = ins.fetchone()[0]
+        result = cursor.fetchone()[0]
         # await ctx.send(result)
         # make arg1 an int, i.e. the amount of drive a player wants to use
         x = int(arg1)
@@ -105,15 +105,15 @@ class GameCog(commands.Cog, name='Game'):
             await ctx.invoke(self.bot.get_command('pull'), arg1=x)
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
+                #db3 = sqlite3.connect('space_kings.sqlite3')
+                #ins = db3.cursor()
                 plyr_ins = (y, ctx.author.display_name,)
                 sql_stuff = """
                     UPDATE players
                     SET player_drive = (?)
                     WHERE player_discord = (?)"""
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab drive points, :( guess you're not licensed.")

@@ -14,7 +14,7 @@ class SqlCog(commands.Cog, name='SQL'):
 
     @commands.command()
     async def ping(self, ctx):
-        cursor = create_conn()
+        conn, cursor = create_conn()
         cursor.execute(f"SELECT player_name FROM players")
         print(ctx.author.display_name)
         result = cursor.fetchone()
@@ -24,12 +24,12 @@ class SqlCog(commands.Cog, name='SQL'):
             await ctx.send(f"SQL no work, git gud.")
         else:
             await ctx.send(result[0])
-        commit_close_conn(cursor)
+        commit_close_conn(conn)
 
     # will return the character's character_sheet
     @commands.command()
     async def players(self, ctx):
-        cursor = create_conn()
+        conn, cursor = create_conn()
         sql_stuff = """SELECT character_name FROM character_sheet"""
         cursor.execute(sql_stuff,)
         result = cursor.fetchall()
@@ -39,7 +39,7 @@ class SqlCog(commands.Cog, name='SQL'):
             await ctx.send(f"SQL no work, git gud.")
         else:
             await ctx.send(result)
-        commit_close_conn(cursor)
+        commit_close_conn(conn)
 
     # new player command that uses author display name
     @commands.command()
