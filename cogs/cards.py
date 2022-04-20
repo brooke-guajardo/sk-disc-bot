@@ -131,8 +131,7 @@ class CardsCog(commands.Cog, name='Cards'):
                 WHERE player_discord = ?
                 """
                 ins_cursor.execute(sql_stuff_ins, deck_ins)
-
-        commit_close_conn(conn)
+                commit_close_conn(conn)
 
         await ctx.send(hand_str)
         if any("Queen of Hearts" in s for s in hand_str):
