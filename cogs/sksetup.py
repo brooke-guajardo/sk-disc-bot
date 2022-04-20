@@ -7,17 +7,19 @@ import sqlite3
 import sys
 import random
 
-class SKDB(commands.Converter):
-    async def create_conn():
-        conn = None
-        try:
-            conn = sqlite3.connect('space_kings.sqlite3')
-        except sqlite3.Error as e:
-            print(e)
-        
-        cursor = conn.cursor()
-        return cursor
 
-    async def commit_close_conn(cursor):
-        cursor.commit()
-        cursor.close()
+async def create_conn():
+    conn = None
+    try:
+        conn = sqlite3.connect('space_kings.sqlite3')
+        print("Connected to the DB.")
+    except sqlite3.Error as e:
+        print(e)
+       
+    cursor = conn.cursor()
+    return cursor
+
+async def commit_close_conn(cursor):
+    cursor.commit()
+    cursor.close()
+    print("Disconnected from the DB.")

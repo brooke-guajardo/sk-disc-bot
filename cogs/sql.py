@@ -5,6 +5,7 @@ import datetime
 import sqlite3
 import sys
 import random
+from sksetup import create_conn, commit_close_conn
 
 class SqlCog(commands.Cog, name='SQL'):
 
@@ -13,8 +14,9 @@ class SqlCog(commands.Cog, name='SQL'):
 
     @commands.command()
     async def ping(self, ctx):
-        db = sqlite3.connect('space_kings.sqlite3')
-        cursor = db.cursor()
+        cursor = create_conn()
+        #db = sqlite3.connect('space_kings.sqlite3')
+        #cursor = db.cursor()
         cursor.execute(f"SELECT player_name FROM players")
         print(ctx.author.display_name)
         result = cursor.fetchone()
@@ -24,6 +26,7 @@ class SqlCog(commands.Cog, name='SQL'):
             await ctx.send(f"SQL no work, git gud.")
         else:
             await ctx.send(result[0])
+        commit_close_conn()
 
     # will return the character's character_sheet
     @commands.command()
