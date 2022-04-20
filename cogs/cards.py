@@ -38,7 +38,7 @@ class CardsCog(commands.Cog, name='Cards'):
             db3.commit()
         except sqlite3.Error as e:
             print(e)
-            await ctx.send(f"ERROR: Someshit happened when inserting your deck into the DB")
+            await ctx.send(f"ERROR: Someshit happened when inserting your deck into the DB, @JardoRook fix yo shit")
         print("1 new deck row updated, ID: ", ins.lastrowid)
         await ctx.send("A new deck has been added for you.")
 

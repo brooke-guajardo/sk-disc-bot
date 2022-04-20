@@ -8,7 +8,7 @@ import sys
 import random
 
 
-async def create_conn():
+def create_conn():
     conn = None
     try:
         conn = sqlite3.connect('space_kings.sqlite3')
@@ -17,7 +17,7 @@ async def create_conn():
         print(e)
        
     cursor = conn.cursor()
-    return await cursor
+    return cursor
 
 async def commit_close_conn(cursor):
     await cursor.commit()

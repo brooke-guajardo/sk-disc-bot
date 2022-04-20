@@ -18,9 +18,6 @@ logger.addHandler(handler)
 
 # new swanky intents that I totally don't hurt myself in my confusion over
 intents = discord.Intents.all()
-#intents.messages = True
-#intents.typing = False
-#intents.presences = False
 
 # cogs
 initial_extensions = ['cogs.sql', 'cogs.cards', 'cogs.game', 'cogs.dm']
