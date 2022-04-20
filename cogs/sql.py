@@ -15,8 +15,6 @@ class SqlCog(commands.Cog, name='SQL'):
     @commands.command()
     async def ping(self, ctx):
         cursor = create_conn()
-        #db = sqlite3.connect('space_kings.sqlite3')
-        #cursor = db.cursor()
         cursor.execute(f"SELECT player_name FROM players")
         print(ctx.author.display_name)
         result = cursor.fetchone()
@@ -26,13 +24,12 @@ class SqlCog(commands.Cog, name='SQL'):
             await ctx.send(f"SQL no work, git gud.")
         else:
             await ctx.send(result[0])
-        commit_close_conn()
+        commit_close_conn(cursor)
 
     # will return the character's character_sheet
     @commands.command()
     async def players(self, ctx):
-        db = sqlite3.connect('space_kings.sqlite3')
-        cursor = db.cursor()
+        cursor = create_conn()
         sql_stuff = """SELECT character_name FROM character_sheet"""
         cursor.execute(sql_stuff,)
         result = cursor.fetchall()
@@ -42,6 +39,7 @@ class SqlCog(commands.Cog, name='SQL'):
             await ctx.send(f"SQL no work, git gud.")
         else:
             await ctx.send(result)
+        commit_close_conn(cursor)
 
     # new player command that uses author display name
     @commands.command()
@@ -52,16 +50,15 @@ class SqlCog(commands.Cog, name='SQL'):
         print("Discord Handle:  ", ctx.author.display_name)
         try:
             # try to insert player discord name and name of character they pass
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            ins_cursor = create_conn()
             sql_stuff = """INSERT INTO players (player_name, player_discord) VALUES (?,?)"""
-            ins.execute(sql_stuff, plyr_ins)
+            ins_cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: User not added to DB")
-        db3.commit()
-        print("1 new player row inserted, ID: ", ins.lastrowid)
-        if ins.lastrowid is None:
+        commit_close_conn(ins_cursor)
+        print("1 new player row inserted, ID: ", ins_cursor.lastrowid)
+        if ins_cursor.lastrowid is None:
             print(f"User was not inserted, please check the logs")
         else:
             await ctx.send(f"User not found. Adding to DB")

@@ -19,7 +19,7 @@ def create_conn():
     cursor = conn.cursor()
     return cursor
 
-async def commit_close_conn(cursor):
-    await cursor.commit()
-    await cursor.close()
+def commit_close_conn(cursor):
+    cursor.commit()
+    cursor.close()
     print("Disconnected from the DB.")
