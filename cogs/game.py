@@ -127,9 +127,9 @@ class GameCog(commands.Cog, name='Game'):
     async def hero(self, ctx, arg1):
         try:
             # try to select player discord name and name of character they pass
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
-            plyr_ins = (ctx.author.display_name,)
+            db3       = sqlite3.connect('space_kings.sqlite3')
+            ins       = db3.cursor()
+            plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_hero_points
                 FROM players
@@ -150,9 +150,9 @@ class GameCog(commands.Cog, name='Game'):
             await ctx.invoke(self.bot.get_command('pull'), arg1=x*2)
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
-                plyr_ins = (y, ctx.author.display_name,)
+                db3       = sqlite3.connect('space_kings.sqlite3')
+                ins       = db3.cursor()
+                plyr_ins  = (y, ctx.author.display_name,)
                 sql_stuff = """
                     UPDATE players
                     SET player_hero_points = (?)
@@ -171,9 +171,9 @@ class GameCog(commands.Cog, name='Game'):
     @commands.command()
     async def char(self, ctx):
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
-            plyr_ins = (ctx.author.display_name,)
+            db3       = sqlite3.connect('space_kings.sqlite3')
+            ins       = db3.cursor()
+            plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_brawn, player_intelligence, player_charm, player_agility, player_wit, player_presence, player_name, player_char_desc
                 FROM players
@@ -187,14 +187,14 @@ class GameCog(commands.Cog, name='Game'):
         attributes = ins.fetchone()
 
         # need to format results
-        brawn = attributes[0]
+        brawn        = attributes[0]
         intelligence = attributes[1]
-        charm = attributes[2]
-        agility = attributes[3]
-        wit = attributes[4]
-        presence = attributes[5]
-        name = attributes[6]
-        char_desc = attributes[7]
+        charm        = attributes[2]
+        agility      = attributes[3]
+        wit          = attributes[4]
+        presence     = attributes[5]
+        name         = attributes[6]
+        char_desc    = attributes[7]
 
         # fancy discord embed
         embed = discord.Embed(title=f"{name}", colour=discord.Colour(0x439b32), description=f"```\n{char_desc}```")
@@ -212,9 +212,9 @@ class GameCog(commands.Cog, name='Game'):
     @commands.command()
     async def list_attr(self, ctx):
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
-            plyr_ins = (ctx.author.display_name,)
+            db3       = sqlite3.connect('space_kings.sqlite3')
+            ins       = db3.cursor()
+            plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_brawn, player_intelligence, player_charm, player_agility, player_wit, player_presence, player_name
                 FROM players
@@ -228,13 +228,13 @@ class GameCog(commands.Cog, name='Game'):
         attributes = ins.fetchone()
 
         # need to format results
-        brawn = attributes[0]
+        brawn        = attributes[0]
         intelligence = attributes[1]
-        charm = attributes[2]
-        agility = attributes[3]
-        wit = attributes[4]
-        presence = attributes[5]
-        name = attributes[6]
+        charm        = attributes[2]
+        agility      = attributes[3]
+        wit          = attributes[4]
+        presence     = attributes[5]
+        name         = attributes[6]
 
         # fancy discord embed
         embed = discord.Embed(colour=discord.Colour(0x439b32))
@@ -289,26 +289,26 @@ class GameCog(commands.Cog, name='Game'):
         skills = ins.fetchone()
 
         # need to format results
-        athletics = skills[0]
-        biology = skills[1]
-        computers = skills[2]
-        empathy = skills[3]
-        engineering = skills[4]
-        explosives = skills[5]
-        firearms = skills[6]
+        athletics     = skills[0]
+        biology       = skills[1]
+        computers     = skills[2]
+        empathy       = skills[3]
+        engineering   = skills[4]
+        explosives    = skills[5]
+        firearms      = skills[6]
         investigation = skills[7]
-        law = skills[8]
-        lying = skills[9]
-        melee = skills[10]
-        perform = skills[11]
-        piloting = skills[12]
-        persuasion = skills[13]
-        sneaking = skills[14]
-        spacewise = skills[15]
-        survival = skills[16]
-        telekinesis = skills[17]
-        telepathy = skills[18]
-        name = skills[19]
+        law           = skills[8]
+        lying         = skills[9]
+        melee         = skills[10]
+        perform       = skills[11]
+        piloting      = skills[12]
+        persuasion    = skills[13]
+        sneaking      = skills[14]
+        spacewise     = skills[15]
+        survival      = skills[16]
+        telekinesis   = skills[17]
+        telepathy     = skills[18]
+        name          = skills[19]
 
         # fancy discord embed
         embed = discord.Embed(colour=discord.Colour(0x439b32))
@@ -337,9 +337,9 @@ class GameCog(commands.Cog, name='Game'):
 # main player command, player attribute + skills
     @commands.command()
     async def roll(self, ctx, arg1, arg2):
-        db3 = sqlite3.connect('space_kings.sqlite3')
-        ins = db3.cursor()
-        plyr_ins = (ctx.author.display_name,)
+        db3       = sqlite3.connect('space_kings.sqlite3')
+        ins       = db3.cursor()
+        plyr_ins  = (ctx.author.display_name,)
         sql_stuff = 'SELECT skills.'+arg1+', players.player_'+arg2+', player_health, player_brawn, player_current_health FROM skills inner join players on skills.skills_player_id=players.player_id where player_discord= ?'
         ins.execute(sql_stuff, plyr_ins)
         # get skill and attr results and add them, they're int values already
@@ -366,9 +366,9 @@ class GameCog(commands.Cog, name='Game'):
 # catch phrase!
     @commands.command()
     async def catch_phrase(self, ctx):
-        db3 = sqlite3.connect('space_kings.sqlite3')
-        ins = db3.cursor()
-        plyr_ins = (ctx.author.display_name,)
+        db3       = sqlite3.connect('space_kings.sqlite3')
+        ins       = db3.cursor()
+        plyr_ins  = (ctx.author.display_name,)
         sql_stuff = 'SELECT skills.perform, players.player_charm FROM skills inner join players on skills.skills_player_id=players.player_id where player_discord= ?'
         ins.execute(sql_stuff, plyr_ins)
         result = ins.fetchall()[0]
@@ -381,9 +381,9 @@ class GameCog(commands.Cog, name='Game'):
     async def dodge(self, ctx, arg1):
         try:
             # try to select player discord name and name of character they pass
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
-            plyr_ins = (ctx.author.display_name,)
+            db3       = sqlite3.connect('space_kings.sqlite3')
+            ins       = db3.cursor()
+            plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_dodge
                 FROM players
@@ -404,9 +404,9 @@ class GameCog(commands.Cog, name='Game'):
 
             try:
                 # update db with new dodge value
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
-                plyr_ins = (y, ctx.author.display_name,)
+                db3       = sqlite3.connect('space_kings.sqlite3')
+                ins       = db3.cursor()
+                plyr_ins  = (y, ctx.author.display_name,)
                 sql_stuff = """
                     UPDATE players
                     SET player_dodge = (?)
@@ -428,9 +428,9 @@ class GameCog(commands.Cog, name='Game'):
         if ctx.author.display_name == 'JardoRook':
             try:
                 # try to select player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
-                plyr_ins = (arg1,)
+                db3       = sqlite3.connect('space_kings.sqlite3')
+                ins       = db3.cursor()
+                plyr_ins  = (arg1,)
                 sql_stuff = """
                     SELECT player_current_health, player_health
                     FROM players
@@ -445,9 +445,9 @@ class GameCog(commands.Cog, name='Game'):
         if x > result[1]:
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
-                plyr_ins = (result[1], arg1,)
+                db3       = sqlite3.connect('space_kings.sqlite3')
+                ins       = db3.cursor()
+                plyr_ins  = (result[1], arg1,)
                 sql_stuff = """
                     UPDATE players
                     SET player_current_health = (?)
@@ -479,9 +479,9 @@ class GameCog(commands.Cog, name='Game'):
     @commands.command()
     async def status(self, ctx):
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
-            plyr_ins = (ctx.author.display_name,)
+            db3       = sqlite3.connect('space_kings.sqlite3')
+            ins       = db3.cursor()
+            plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_init, player_dodge, player_drive, player_charm + 1, player_hero_points, player_name, player_current_health, player_brawn
                 FROM players
@@ -495,14 +495,14 @@ class GameCog(commands.Cog, name='Game'):
         attributes = ins.fetchone()
 
         # need to format results
-        init = attributes[0]
-        dodge = attributes[1]
-        drive = attributes[2]
-        crit = attributes[3]
-        hero = attributes[4]
-        name = attributes[5]
+        init   = attributes[0]
+        dodge  = attributes[1]
+        drive  = attributes[2]
+        crit   = attributes[3]
+        hero   = attributes[4]
+        name   = attributes[5]
         health = attributes[6]
-        brawn = attributes[7]
+        brawn  = attributes[7]
 
         # fancy discord embed
         embed = discord.Embed(colour=discord.Colour(0x439b32), title="Health")
