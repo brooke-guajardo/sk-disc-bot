@@ -1,5 +1,5 @@
 PROJECT_NAME=discord-bot
-PROJECT_YML=discord_bot_compose.yml
+PROJECT_YML=docker_setup/discord_bot_compose.yml
 
 .PHONY: start
 start:
@@ -12,4 +12,4 @@ stop:
 
 .PHONY: build
 build:
-	docker build -t discord_bot .
+	docker build -t discord_bot -f docker_setup/Dockerfile .
