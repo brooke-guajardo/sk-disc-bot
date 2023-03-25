@@ -1,0 +1,15 @@
+services:
+  discord:
+    image: "discord_bot:latest"
+    volumes:
+      - discord_home:/var/discord_home
+      - type: bind
+        source: /tmp/
+        target: /tmp/
+    extra_hosts:
+      - "bulbasaur:192.168.1.28"
+      - "charmander:192.168.1.84"
+      - "squirtle:192.168.1.32"
+      - "sandshrew:192.168.1.49"
+volumes:
+  discord_home:
