@@ -2,7 +2,7 @@ services:
   discord:
     image: "discord_bot:latest"
     volumes:
-      - discord_home:/var/discord_home
+      - discord_home:/usr/src/app
       - type: bind
         source: /tmp/
         target: /tmp/
