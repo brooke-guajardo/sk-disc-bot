@@ -1,4 +1,4 @@
-Fun project of converting Space King's improv tabletop rule set into discord bot form. No affiliation, just a way to learn discord API.
+Fun project of converting Space King's improv tabletop rule set into discord bot form. No affiliation, just a way to learn discord API. [License](misc/LICENSE)
 
 TODO:
 1. Add support for python slash commands
@@ -38,7 +38,9 @@ Docker container has to exist for cp command to work. After the cp command is ra
 
 ## Debug
 Run this after reruning ```make start``` after the cp command. 
-```docker logs -t -n 20 discord-bot-discord-1```
-replace ``` discord-bot-discord-1 ``` with your *container* name. ```-t``` provides timestamps. ```-n 20``` limits the logs to 20 lines max.
+```
+docker logs -t -n 20 discord-bot-discord-1
+```
+Replace ``` discord-bot-discord-1 ``` with your *container* name. ```-t``` provides timestamps. ```-n 20``` limits the logs to 20 lines max.
 If you gucci, you'll see a message like
 ```discord.client: logging in using static token```
