@@ -10,4 +10,6 @@ start:
 stop:
 	docker compose -p $(PROJECT_NAME) -f $(PROJECT_YML) down
 
-
+.PHONY: build
+build:
+	docker build -t discord_bot .
