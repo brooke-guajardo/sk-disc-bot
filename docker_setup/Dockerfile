@@ -11,10 +11,10 @@ RUN apt-get install python3-pip -y
 
 WORKDIR /usr/src/app
 
-COPY docker_setup/requirements.txt ./
+COPY docker_setup/requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY misc/create_sk_db.sql docker_setup/main.py docker_setup/space_kings.sqlite3 ./
+COPY misc/create_sk_db.sql docker_setup/main.py docker_setup/space_kings.sqlite3 .
 COPY docker_setup/cogs/* /usr/src/app/cogs/
 
 CMD [ "python3", "./main.py" ]
