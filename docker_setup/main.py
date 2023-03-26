@@ -45,9 +45,11 @@ class SKBot(commands.Bot):
     @tasks.loop(minutes=10)
     async def background_task(self):
         print('Running background task...')
+        logger.info('Running background task...')
 
     async def on_ready(self):
         print('I am a shitty bot and I am online meow.')
+        logger.info('I am a shitty bot and I am online meow.')
 
 bot = SKBot()
 
