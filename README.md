@@ -44,3 +44,10 @@ docker logs -t -n 20 discord-bot-discord-1
 Replace ``` discord-bot-discord-1 ``` with your *container* name. ```-t``` provides timestamps. ```-n 20``` limits the logs to 20 lines max.
 If you gucci, you'll see a message like
 ```discord.client: logging in using static token```
+Means the bot successfully went online.
+
+If you want to look at the logs that the bot is generating from running. Look into the dicord.log file that's within the container
+```
+docker exec -it discord-bot-discord-1 tail /usr/src/app/discord.log
+```
+This will print out the end of the file. If you want to try ```less``` instead of tail to make the output interactive remember that ```crtl+c``` will kill the bot. ```ctrl+p ctrl+q``` is to exit the sessin without killing the bot.

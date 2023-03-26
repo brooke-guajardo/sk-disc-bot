@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 import asyncio
 import datetime
@@ -8,22 +9,22 @@ import random
 from .sksetup import create_conn, commit_close_conn
 
 class SqlCog(commands.Cog, name='SQL'):
-
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @commands.command()
-    async def ping(self, ctx):
+    @app_commands.command(name="ping-1")
+    async def ping(self, interaction: discord.Interaction) -> None:
+        """ /ping-1 """
         conn, cursor = create_conn()
         cursor.execute(f"SELECT player_name FROM players")
-        print(ctx.author.display_name)
+        print(interaction.user.display_name)
         result = cursor.fetchone()
         if result is None:
             # if we can't find our player we could add them here
             print("SQL no work.")
-            await ctx.send(f"SQL no work, git gud.")
+            await interaction.response.send_message(f"SQL no work, git gud.")
         else:
-            await ctx.send(result[0])
+            await interaction.response.send_message(result[0])
         commit_close_conn(conn)
 
     # will return the character's character_sheet
