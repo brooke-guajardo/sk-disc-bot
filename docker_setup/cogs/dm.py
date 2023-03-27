@@ -5,6 +5,7 @@ import datetime
 import sqlite3
 import sys
 import random
+from .sksetup import create_conn, commit_close_conn, commit_conn
 
 
 class DmCog(commands.Cog, name='DM'):
@@ -23,19 +24,19 @@ class DmCog(commands.Cog, name='DM'):
         x = int(arg2)
         # is player a 'DM' ?, we check with author's display name
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_dm
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to query if {ctx.author.display_name} is a DM, tell JardoRook to git gud.")
             await ctx.send("Syntax is !set_hero_points CharacterName number")
-        result = ins.fetchone()
+        result = cursor.fetchone()
+        commit_close_conn(conn)
         # if flag = 1, author is a DM, if 0, they are not.
         if int(result[0]) != 1:
             # author is no DM! get outta here!
@@ -44,15 +45,14 @@ class DmCog(commands.Cog, name='DM'):
             # author is a DM!
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
+                conn, ins_cursor = create_conn()
                 plyr_ins = (x, arg1,)
                 sql_stuff = """
                     UPDATE players
                     SET player_hero_points = (?)
                     WHERE player_name = (?)"""
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to update hero points, :( guess you're no hero.")
@@ -66,19 +66,19 @@ class DmCog(commands.Cog, name='DM'):
         # arg3 - number
         # is player a 'DM' ?, we check with author's display name
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_dm
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to query if {ctx.author.display_name} is a DM, tell JardoRook to git gud.")
             await ctx.send("Syntax is !set_hero_points CharacterName number")
-        result = ins.fetchone()
+        result = cursor.fetchone()
+        commit_close_conn(conn)
         # if flag = 1, author is a DM, if 0, they are not.
         if int(result[0]) != 1:
             # author is no DM! get outta here!
@@ -88,12 +88,11 @@ class DmCog(commands.Cog, name='DM'):
             plyr_ins = (x, arg1,)
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
+                conn, ins_cursor = create_conn()
                 # + arg1 + allows us to alias the column so I don't fucking make 6 elif's smh
                 sql_stuff = 'UPDATE players SET player_'+arg2+' = (?) WHERE player_name = (?)'
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to update attribute, :( guess you're not allowed.")
@@ -105,19 +104,19 @@ class DmCog(commands.Cog, name='DM'):
         # resetting for all players... totally not a bad thing to do lol eks dee
         # is player a 'DM' ?, we check with author's display name
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_dm
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to query if {ctx.author.display_name} is a DM, tell JardoRook to git gud.")
             await ctx.send("Syntax is !set_hero_points CharacterName number")
         result = ins.fetchone()
+        commit_close_conn(conn)
         # if flag = 1, author is a DM, if 0, they are not.
         if int(result[0]) != 1:
             # author is no DM! get outta here!
@@ -125,15 +124,14 @@ class DmCog(commands.Cog, name='DM'):
         else:
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
+                conn, ins_cursor = create_conn()
                 # + arg1 + allows us to alias the column so I don't fucking make 6 elif's smh
                 sql_stuff = 'update players set player_drive=player_wit + player_presence'
-                ins.execute(sql_stuff,)
-                db3.commit()
+                ins_cursor.execute(sql_stuff,)
+                commit_conn(conn)
                 sql_stuff = 'update players set player_dodge=player_wit + player_agility - 2'
                 ins.execute(sql_stuff,)
-                db3.commit()
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to reset drive, :( guess you're not allowed.")
@@ -150,19 +148,19 @@ class DmCog(commands.Cog, name='DM'):
 
         # is player a 'DM' ?, we check with author's display name
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_dm
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to query if {ctx.author.display_name} is a DM, tell Jardo Rook to git gud.")
             await ctx.send("Syntax is !set_hero_points CharacterName number")
-        result = ins.fetchone()
+        result = cursor.fetchone()
+        commit_close_conn(conn)
         # if flag = 1, author is a DM, if 0, they are not.
         if int(result[0]) != 1:
             # author is no DM! get outta here!
@@ -170,18 +168,18 @@ class DmCog(commands.Cog, name='DM'):
         else:
             try:
                 # try to select player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
+                conn, cursor = create_conn()
                 plyr_ins = (arg1,)
                 sql_stuff = """
                     SELECT player_current_health
                     FROM players
                     WHERE player_name = ?"""
-                ins.execute(sql_stuff, plyr_ins)
+                cursor.execute(sql_stuff, plyr_ins)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab current health, tell Jardo Rook to git gud.")
-            result = ins.fetchall()[0]
+            result = cursor.fetchall()[0]
+            commit_close_conn(conn)
             # need to now subtract from total health, its not infinite!
             y = result[0] - x
             # see if the player has enough health to lose any ;)
@@ -189,15 +187,14 @@ class DmCog(commands.Cog, name='DM'):
                 # we are good enuff
                 try:
                     # try to insert player discord name and name of character they pass
-                    db3 = sqlite3.connect('space_kings.sqlite3')
-                    ins = db3.cursor()
+                    conn, ins_cursor = create_conn()
                     plyr_ins = (y, arg1,)
                     sql_stuff = """
                         UPDATE players
                         SET player_current_health = (?)
                         WHERE player_name = (?)"""
-                    ins.execute(sql_stuff, plyr_ins)
-                    db3.commit()
+                    ins_cursor.execute(sql_stuff, plyr_ins)
+                    commit_close_conn(conn)
                 except sqlite3.Error as e:
                     print(e)
                     await ctx.send(f"ERROR: Unable to update health, this is Jardo Rook's fault.")
@@ -206,15 +203,14 @@ class DmCog(commands.Cog, name='DM'):
                 # lmaoooo you ded
                 try:
                     # try to insert player discord name and name of character they pass
-                    db3 = sqlite3.connect('space_kings.sqlite3')
-                    ins = db3.cursor()
+                    conn, ins_cursor = create_conn()
                     plyr_ins = (y, arg1,)
                     sql_stuff = """
                         UPDATE players
                         SET player_current_health = (?)
                         WHERE player_name = (?)"""
-                    ins.execute(sql_stuff, plyr_ins)
-                    db3.commit()
+                    ins_cursor.execute(sql_stuff, plyr_ins)
+                    commit_close_conn(conn)
                 except sqlite3.Error as e:
                     print(e)
                     await ctx.send(f"ERROR: Unable to update health, this is Jardo Rook's fault.")
@@ -223,15 +219,14 @@ class DmCog(commands.Cog, name='DM'):
                 # we are not gucci, feel bad.
                 try:
                     # try to insert player discord name and name of character they pass
-                    db3 = sqlite3.connect('space_kings.sqlite3')
-                    ins = db3.cursor()
+                    conn, ins_cursor = create_conn()
                     plyr_ins = (0, arg1,)
                     sql_stuff = """
                         UPDATE players
                         SET player_current_health = (?)
                         WHERE player_name = (?)"""
-                    ins.execute(sql_stuff, plyr_ins)
-                    db3.commit()
+                    ins_cursor.execute(sql_stuff, plyr_ins)
+                    commit_close_conn(conn)
                 except sqlite3.Error as e:
                     print(e)
                     await ctx.send(f"ERROR: Unable to update health, this is Jardo Rook's fault.")
@@ -245,19 +240,19 @@ class DmCog(commands.Cog, name='DM'):
         # arg3 - number
         # is player a 'DM' ?, we check with author's display name
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_dm
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to query if {ctx.author.display_name} is a DM, tell JardoRook to git gud.")
             await ctx.send("Syntax is !set_hero_points CharacterName number")
-        result = ins.fetchone()
+        result = cursor.fetchone()
+        commit_close_conn(conn)
         # if flag = 1, author is a DM, if 0, they are not.
         if int(result[0]) != 1:
             # author is no DM! get outta here!
@@ -267,12 +262,11 @@ class DmCog(commands.Cog, name='DM'):
             plyr_ins = (x, arg1,)
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
+                conn, ins_cursor = create_conn()
                 # + arg1 + allows us to alias the column so I don't fucking make 6 elif's smh
                 sql_stuff = f"UPDATE skills SET {arg2}=? WHERE skills_player_id in (select player_id from players where player_name=?)"
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to update skill, :( guess you're not allowed.")
