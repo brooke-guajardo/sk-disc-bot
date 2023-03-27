@@ -27,7 +27,7 @@ def commit_close_conn(conn):
     print("Disconnected from the DB.")
     logger.info('Disconnected from the DB.')
 
-def commit(conn):
+def commit_conn(conn):
     conn.commit()
     print("Committed")
     logger.info('Disconnected from the DB.')
