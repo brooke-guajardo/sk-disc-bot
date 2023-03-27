@@ -94,6 +94,7 @@ class GameCog(commands.Cog, name='Game'):
             print(e)
             await ctx.send(f"ERROR: Unable to grab drive, :( guess you're not licensed.")
         result = cursor.fetchone()[0]
+        commit_close_conn(conn)
         # await ctx.send(result)
         # make arg1 an int, i.e. the amount of drive a player wants to use
         x = int(arg1)
@@ -105,14 +106,13 @@ class GameCog(commands.Cog, name='Game'):
             await ctx.invoke(self.bot.get_command('pull'), arg1=x)
             try:
                 # try to insert player discord name and name of character they pass
-                #db3 = sqlite3.connect('space_kings.sqlite3')
-                #ins = db3.cursor()
+                conn, ins_cursor = create_conn()
                 plyr_ins = (y, ctx.author.display_name,)
                 sql_stuff = """
                     UPDATE players
                     SET player_drive = (?)
                     WHERE player_discord = (?)"""
-                cursor.execute(sql_stuff, plyr_ins)
+                ins_cursor.execute(sql_stuff, plyr_ins)
                 commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
