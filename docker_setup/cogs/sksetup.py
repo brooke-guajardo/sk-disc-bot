@@ -11,7 +11,7 @@ import random
 def create_conn():
     conn = None
     try:
-        conn = sqlite3.connect('space_kings.sqlite3')
+        conn = sqlite3.connect('pain/space_kings.sqlite3')
         print("Connected to the DB.")
         logger.info('Connected to the DB.')
     except sqlite3.Error as e:
