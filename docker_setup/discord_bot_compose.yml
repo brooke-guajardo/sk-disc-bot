@@ -2,6 +2,6 @@ services:
   discord:
     image: "discord_bot:latest"
     volumes:
-      - discord_home:/usr/src/app
+      - discord_home:/usr/src/app/pain
 volumes:
   discord_home:
