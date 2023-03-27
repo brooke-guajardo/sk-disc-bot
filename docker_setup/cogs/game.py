@@ -127,19 +127,18 @@ class GameCog(commands.Cog, name='Game'):
     async def hero(self, ctx, arg1):
         try:
             # try to select player discord name and name of character they pass
-            db3       = sqlite3.connect('space_kings.sqlite3')
-            ins       = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_hero_points
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to grab hero points, :( guess you're no hero.")
-        result = ins.fetchone()[0]
-        # await ctx.send(result)
+        result = cursor.fetchone()[0]
+        commit_close_conn(conn)
         # make arg1 an int, i.e. the amount of drive a player wants to use
         x = int(arg1)
         # need to now subtract from total drive, its not infinite!
@@ -150,15 +149,14 @@ class GameCog(commands.Cog, name='Game'):
             await ctx.invoke(self.bot.get_command('pull'), arg1=x*2)
             try:
                 # try to insert player discord name and name of character they pass
-                db3       = sqlite3.connect('space_kings.sqlite3')
-                ins       = db3.cursor()
+                conn, ins_cursor = create_conn()
                 plyr_ins  = (y, ctx.author.display_name,)
                 sql_stuff = """
                     UPDATE players
                     SET player_hero_points = (?)
                     WHERE player_discord = (?)"""
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab hero points, :( guess you're no hero.")
@@ -171,20 +169,20 @@ class GameCog(commands.Cog, name='Game'):
     @commands.command()
     async def char(self, ctx):
         try:
-            db3       = sqlite3.connect('space_kings.sqlite3')
-            ins       = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_brawn, player_intelligence, player_charm, player_agility, player_wit, player_presence, player_name, player_char_desc
                 FROM players
                 WHERE player_discord= ?
                 """
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: ")
 
-        attributes = ins.fetchone()
+        attributes = cursor.fetchone()
+        commit_close_conn(conn)
 
         # need to format results
         brawn        = attributes[0]
@@ -212,20 +210,20 @@ class GameCog(commands.Cog, name='Game'):
     @commands.command()
     async def list_attr(self, ctx):
         try:
-            db3       = sqlite3.connect('space_kings.sqlite3')
-            ins       = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_brawn, player_intelligence, player_charm, player_agility, player_wit, player_presence, player_name
                 FROM players
                 WHERE player_discord= ?
                 """
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: ")
 
-        attributes = ins.fetchone()
+        attributes = cursor.fetchone()
+        commit_close_conn(conn)
 
         # need to format results
         brawn        = attributes[0]
@@ -251,8 +249,7 @@ class GameCog(commands.Cog, name='Game'):
     @commands.command()
     async def list_skills(self, ctx):
         try:
-            db3 = sqlite3.connect('space_kings.sqlite3')
-            ins = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT
@@ -281,12 +278,13 @@ class GameCog(commands.Cog, name='Game'):
                 ON skills.skills_player_id=players.player_id
                 WHERE player_discord= ?
                 """
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: ")
 
-        skills = ins.fetchone()
+        skills = cursor.fetchone()
+        commit_close_conn(conn)
 
         # need to format results
         athletics     = skills[0]
@@ -337,13 +335,13 @@ class GameCog(commands.Cog, name='Game'):
 # main player command, player attribute + skills
     @commands.command()
     async def roll(self, ctx, arg1, arg2):
-        db3       = sqlite3.connect('space_kings.sqlite3')
-        ins       = db3.cursor()
+        conn, cursor = create_conn()
         plyr_ins  = (ctx.author.display_name,)
         sql_stuff = 'SELECT skills.'+arg1+', players.player_'+arg2+', player_health, player_brawn, player_current_health FROM skills inner join players on skills.skills_player_id=players.player_id where player_discord= ?'
-        ins.execute(sql_stuff, plyr_ins)
+        cursor.execute(sql_stuff, plyr_ins)
         # get skill and attr results and add them, they're int values already
-        result = ins.fetchall()[0]
+        result = cursor.fetchall()[0]
+        commit_close_conn(conn)
         # calc cards to draw from skill+ attr
         x = result[0] + result[1]
         # is player healthy? compare current health with calculated injury = player_health- player_brawn
@@ -366,12 +364,12 @@ class GameCog(commands.Cog, name='Game'):
 # catch phrase!
     @commands.command()
     async def catch_phrase(self, ctx):
-        db3       = sqlite3.connect('space_kings.sqlite3')
-        ins       = db3.cursor()
+        conn, cursor = create_conn()
         plyr_ins  = (ctx.author.display_name,)
         sql_stuff = 'SELECT skills.perform, players.player_charm FROM skills inner join players on skills.skills_player_id=players.player_id where player_discord= ?'
-        ins.execute(sql_stuff, plyr_ins)
-        result = ins.fetchall()[0]
+        cursor.execute(sql_stuff, plyr_ins)
+        result = cursor.fetchall()[0]
+        commit_close_conn(conn)
         x = result[0] + result[1] # charm + persuasion, CATCH PHRASE!
         # assign x the integer value of attribute + skill
         await ctx.invoke(self.bot.get_command('pull'), arg1=x)
@@ -381,18 +379,18 @@ class GameCog(commands.Cog, name='Game'):
     async def dodge(self, ctx, arg1):
         try:
             # try to select player discord name and name of character they pass
-            db3       = sqlite3.connect('space_kings.sqlite3')
-            ins       = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_dodge
                 FROM players
                 WHERE player_discord = ?"""
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: Unable to grab dodge, :( pls message JardoRook and tell them to git gud")
-        result = ins.fetchone()[0]
+        result = cursor.fetchone()[0]
+        commit_close_conn(conn)
         # await ctx.send(result)
         # make arg1 an int, i.e. the amount of dodge a player wants to use
         x = int(arg1)
@@ -401,18 +399,16 @@ class GameCog(commands.Cog, name='Game'):
         # see if the player has enough dodge to use
         if result - x >=0:
             # they have dodge to use
-
             try:
                 # update db with new dodge value
-                db3       = sqlite3.connect('space_kings.sqlite3')
-                ins       = db3.cursor()
+                conn, ins_cursor = create_conn()
                 plyr_ins  = (y, ctx.author.display_name,)
                 sql_stuff = """
                     UPDATE players
                     SET player_dodge = (?)
                     WHERE player_discord = (?)"""
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab dodge, :( pls message JardoRook and tell them to git gud")
@@ -428,32 +424,31 @@ class GameCog(commands.Cog, name='Game'):
         if ctx.author.display_name == 'JardoRook':
             try:
                 # try to select player discord name and name of character they pass
-                db3       = sqlite3.connect('space_kings.sqlite3')
-                ins       = db3.cursor()
+                conn, cursor = create_conn()
                 plyr_ins  = (arg1,)
                 sql_stuff = """
                     SELECT player_current_health, player_health
                     FROM players
                     WHERE player_name = ?"""
-                ins.execute(sql_stuff, plyr_ins)
+                cursor.execute(sql_stuff, plyr_ins)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to grab current health, tell JardoRook to git gud.")
-        result = ins.fetchall()[0]
+        result = cursor.fetchall()[0]
+        commit_close_conn(conn)
         # current health + healing
         x = result[0] + x
         if x > result[1]:
             try:
                 # try to insert player discord name and name of character they pass
-                db3       = sqlite3.connect('space_kings.sqlite3')
-                ins       = db3.cursor()
+                conn, ins_cursor = create_conn()
                 plyr_ins  = (result[1], arg1,)
                 sql_stuff = """
                     UPDATE players
                     SET player_current_health = (?)
                     WHERE player_name = (?)"""
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to update health, this is JardoRook's fault.")
@@ -461,15 +456,14 @@ class GameCog(commands.Cog, name='Game'):
         else:
             try:
                 # try to insert player discord name and name of character they pass
-                db3 = sqlite3.connect('space_kings.sqlite3')
-                ins = db3.cursor()
+                conn, ins_cursor = create_conn()
                 plyr_ins = (x, arg1,)
                 sql_stuff = """
                     UPDATE players
                     SET player_current_health = (?)
                     WHERE player_name = (?)"""
-                ins.execute(sql_stuff, plyr_ins)
-                db3.commit()
+                ins_cursor.execute(sql_stuff, plyr_ins)
+                commit_close_conn(conn)
             except sqlite3.Error as e:
                 print(e)
                 await ctx.send(f"ERROR: Unable to update health, this is JardoRook's fault.")
@@ -479,20 +473,20 @@ class GameCog(commands.Cog, name='Game'):
     @commands.command()
     async def status(self, ctx):
         try:
-            db3       = sqlite3.connect('space_kings.sqlite3')
-            ins       = db3.cursor()
+            conn, cursor = create_conn()
             plyr_ins  = (ctx.author.display_name,)
             sql_stuff = """
                 SELECT player_init, player_dodge, player_drive, player_charm + 1, player_hero_points, player_name, player_current_health, player_brawn
                 FROM players
                 WHERE player_discord= ?
                 """
-            ins.execute(sql_stuff, plyr_ins)
+            cursor.execute(sql_stuff, plyr_ins)
         except sqlite3.Error as e:
             print(e)
             await ctx.send(f"ERROR: ")
 
-        attributes = ins.fetchone()
+        attributes = cursor.fetchone()
+        commit_close_conn(conn)
 
         # need to format results
         init   = attributes[0]
